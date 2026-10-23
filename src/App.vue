@@ -2,7 +2,7 @@
 // Import Vue helpers:
 // ref() is used for reactive values that can change.
 // computed() is used for values calculated from other reactive data.
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 //                                   Sorting section
 
@@ -84,136 +84,25 @@ const categories = [
 
 //                                Lesson Data
 
-// Stores the classes and activities.
-// ref() is used because lesson data can change later,
-// for example when the number of available spaces decreases.
-const lessons = ref([
-  {
-    // Unique ID for this lesson
-    id: 1,
+// Stores the classes and activities (Lesson Data).
 
-    // Lesson title
-    subject: "Coding for Kids",
-
-    // Defines whether this item is a Class or an Activity
-    type: "Class",
-
-    // Lesson location
-    location: "Edgware",
-
-    // Teacher name
-    teacher: "Mr Wilson",
-
-    // Lesson price
-    price: 15,
-
-    // Number of available spaces
-    spaces: 8,
-
-    // Lesson image
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-  },
-
-  {
-    id: 2,
-    subject: "Football Club",
-    type: "Activity",
-    location: "Mill Hill",
-    teacher: "Coach Taylor",
-    price: 12,
-    spaces: 5,
-    image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55",
-  },
-
-  {
-    id: 3,
-    subject: "Art & Creativity",
-    type: "Class",
-    location: "Hendon",
-    teacher: "Ms Carter",
-    price: 14,
-    spaces: 6,
-    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f",
-  },
-
-  {
-    id: 4,
-    subject: "Piano Lessons",
-    type: "Class",
-    location: "Barnet",
-    teacher: "Mrs Lee",
-    price: 18,
-    spaces: 4,
-    image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0",
-  },
-
-  {
-    id: 5,
-    subject: "Junior Basketball",
-    type: "Activity",
-    location: "Finchley",
-    teacher: "Mr Davis",
-    price: 13,
-    spaces: 7,
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc",
-  },
-
-  {
-    id: 6,
-    subject: "Young Scientists",
-    type: "Class",
-    location: "Colindale",
-    teacher: "Dr Smith",
-    price: 16,
-    spaces: 3,
-    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d",
-  },
-
-  {
-    id: 7,
-    subject: "Chess Club",
-    type: "Activity",
-    location: "Edgware",
-    teacher: "Mr Clark",
-    price: 10,
-    spaces: 5,
-    image: "https://images.unsplash.com/photo-1586165368502-1bad197a6461",
-  },
-
-  {
-    id: 8,
-    subject: "English Workshop",
-    type: "Class",
-    location: "Hendon",
-    teacher: "Ms Adams",
-    price: 13,
-    spaces: 9,
-    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7",
-  },
-
-  {
-    id: 9,
-    subject: "Kids Dance",
-    type: "Activity",
-    location: "Mill Hill",
-    teacher: "Ms Harris",
-    price: 12,
-    spaces: 4,
-    image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad",
-  },
-
-  {
-    id: 10,
-    subject: "Maths Club",
-    type: "Class",
-    location: "Finchley",
-    teacher: "Mr Brown",
-    price: 11,
-    spaces: 6,
-    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904",
-  },
-]);
-
+const lessons = ref([]);
+// Get lessons from backend
+onMounted(() => {
+  fetch("http://localhost:3000/lessons")
+    .then((response) => response.json())
+    .then((data) => {
+      lessons.value = data.map((lesson) => ({
+        ...lesson,
+        id: lesson._id,
+        subject: lesson.topic,
+        spaces: lesson.space,
+      }));
+    })
+    .catch((error) => {
+      console.error("Failed to fetch lessons:", error);
+    });
+});
 //                                          Sorting Lesson
 
 // computed() creates a derived value.
