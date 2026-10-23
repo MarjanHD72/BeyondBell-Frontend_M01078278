@@ -82,6 +82,40 @@ const categories = [
   },
 ];
 
+// search
+const searchText = ref("");
+async function searchLessons() {
+  try {
+    if (searchText.value.trim() === "") {
+      const response = await fetch("http://localhost:3000/lessons");
+      const data = await response.json();
+
+      lessons.value = data.map((lesson) => ({
+        ...lesson,
+        id: lesson._id,
+        subject: lesson.topic,
+        spaces: lesson.space,
+      }));
+
+      return;
+    }
+
+    const response = await fetch(
+      `http://localhost:3000/lessons/search?q=${encodeURIComponent(searchText.value)}`,
+    );
+
+    const data = await response.json();
+
+    lessons.value = data.map((lesson) => ({
+      ...lesson,
+      id: lesson._id,
+      subject: lesson.topic,
+      spaces: lesson.space,
+    }));
+  } catch (error) {
+    console.error("Failed to search lessons:", error);
+  }
+}
 //                                Lesson Data
 
 // Stores the classes and activities (Lesson Data).
@@ -334,11 +368,13 @@ async function placeOrder() {
             <!-- Search -->
             <div class="search-box">
               <input
+                v-model="searchText"
                 type="text"
                 placeholder="Search for classes, activities or locations..."
+                @keyup.enter="searchLessons"
               />
 
-              <button>Search</button>
+              <button @click="searchLessons">Search</button>
             </div>
 
             <!-- Filters -->
