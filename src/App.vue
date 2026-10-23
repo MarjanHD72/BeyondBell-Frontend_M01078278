@@ -219,17 +219,59 @@ function toggleCart() {
   showCart.value = !showCart.value;
 }
 // Placing Order
-function placeOrder() {
+async function placeOrder() {
   if (!isCheckoutValid.value) {
     return;
   }
 
-  orderPlaced.value = true;
+  const order = {
+    name: customerName.value,
+    phone: customerPhone.value,
+    lessonIDs: cart.value.map((lesson) => lesson.id),
+    spaces: cart.value.length,
+  };
 
-  cart.value = [];
+  try {
+    // Create the order
+    const response = await fetch("http://localhost:3000/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+    });
 
-  customerName.value = "";
-  customerPhone.value = "";
+    const data = await response.json();
+
+    console.log(data);
+
+    // Get each lesson only once
+    const lessonsToUpdate = [
+      ...new Map(cart.value.map((lesson) => [lesson.id, lesson])).values(),
+    ];
+
+    // Update remaining spaces in MongoDB
+    for (const lesson of lessonsToUpdate) {
+      await fetch(`http://localhost:3000/lessons/${lesson.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          space: lesson.spaces,
+        }),
+      });
+    }
+
+    orderPlaced.value = true;
+
+    cart.value = [];
+
+    customerName.value = "";
+    customerPhone.value = "";
+  } catch (error) {
+    console.error("Failed to place order:", error);
+  }
 }
 </script>
 
