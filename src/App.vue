@@ -136,6 +136,14 @@ onMounted(() => {
     .catch((error) => {
       console.error("Failed to fetch lessons:", error);
     });
+  fetch("http://localhost:3000/teachers")
+    .then((response) => response.json())
+    .then((data) => {
+      teachers.value = data;
+    })
+    .catch((error) => {
+      console.error("Failed to fetch teachers:", error);
+    });
 });
 //                                          Sorting Lesson
 
@@ -204,12 +212,49 @@ const cartItems = computed(() => {
   return groupedItems;
 });
 
+//teachers
+const teachers = ref([]);
+const selectedTeacher = ref("");
+
 // Calculates the total price of all items in the cart.
 const cartTotal = computed(() => {
   return cart.value.reduce((total, lesson) => {
     return total + lesson.price;
   }, 0);
 });
+//Filtering Teachers List
+async function filterByTeacher() {
+  try {
+    if (selectedTeacher.value === "") {
+      const response = await fetch("http://localhost:3000/lessons");
+      const data = await response.json();
+
+      lessons.value = data.map((lesson) => ({
+        ...lesson,
+        id: lesson._id,
+        subject: lesson.topic,
+        spaces: lesson.space,
+      }));
+
+      return;
+    }
+
+    const response = await fetch(
+      `http://localhost:3000/teachers/${selectedTeacher.value}/lessons`,
+    );
+
+    const data = await response.json();
+
+    lessons.value = data.map((lesson) => ({
+      ...lesson,
+      id: lesson._id,
+      subject: lesson.topic,
+      spaces: lesson.space,
+    }));
+  } catch (error) {
+    console.error("Failed to filter lessons by teacher:", error);
+  }
+}
 
 // Checks if the name and phone number are valid
 const isCheckoutValid = computed(() => {
@@ -450,6 +495,23 @@ async function placeOrder() {
 
             <!-- Sorting -->
             <div class="sorting">
+              <div class="teacher-filter">
+                <label>
+                  Teacher
+
+                  <select v-model="selectedTeacher" @change="filterByTeacher">
+                    <option value="">All Teachers</option>
+
+                    <option
+                      v-for="teacher in teachers"
+                      :key="teacher._id"
+                      :value="teacher._id"
+                    >
+                      {{ teacher.firstName }} {{ teacher.lastName }}
+                    </option>
+                  </select>
+                </label>
+              </div>
               <label>
                 Sort by
 
