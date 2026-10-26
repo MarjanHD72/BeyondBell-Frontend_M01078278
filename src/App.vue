@@ -215,6 +215,11 @@ const cartItems = computed(() => {
 //teachers
 const teachers = ref([]);
 const selectedTeacher = ref("");
+// Stores the lessons for the selected teacher
+const selectedTeacherLessons = ref([]);
+
+// Stores the selected teacher name
+const selectedTeacherName = ref("");
 
 // Calculates the total price of all items in the cart.
 const cartTotal = computed(() => {
@@ -228,8 +233,7 @@ async function filterByTeacher() {
     if (selectedTeacher.value === "") {
       const response = await fetch("http://localhost:3000/lessons");
       const data = await response.json();
-
-      lessons.value = data.map((lesson) => ({
+      selectedTeacherLessons.value = data.map((lesson) => ({
         ...lesson,
         id: lesson._id,
         subject: lesson.topic,
@@ -255,7 +259,29 @@ async function filterByTeacher() {
     console.error("Failed to filter lessons by teacher:", error);
   }
 }
+// Gets the lessons for the selected teacher
+async function showTeacherLessons(teacher) {
+  selectedTeacher.value = teacher._id;
 
+  selectedTeacherName.value = teacher.firstName + " " + teacher.lastName;
+
+  try {
+    const response = await fetch(
+      `http://localhost:3000/teachers/${teacher._id}/lessons`,
+    );
+
+    const data = await response.json();
+
+    selectedTeacherLessons.value = data.map((lesson) => ({
+      ...lesson,
+      id: lesson._id,
+      subject: lesson.topic,
+      spaces: lesson.space,
+    }));
+  } catch (error) {
+    console.error("Failed to get teacher lessons:", error);
+  }
+}
 // Checks if the name and phone number are valid
 const isCheckoutValid = computed(() => {
   if (customerName.value === "" || customerPhone.value === "") {
@@ -306,7 +332,14 @@ async function placeOrder() {
   const order = {
     name: customerName.value,
     phone: customerPhone.value,
-    lessonIDs: cart.value.map((lesson) => lesson.id),
+
+    lessonIDs: cartItems.value.map((item) => item.id),
+
+    items: cartItems.value.map((item) => ({
+      lessonId: item.id,
+      spaces: item.quantity,
+    })),
+
     spaces: cart.value.length,
   };
 
@@ -352,6 +385,16 @@ async function placeOrder() {
     console.error("Failed to place order:", error);
   }
 }
+// Stores the page section currently selected by the user
+const currentView = ref("home");
+// Filters only class lessons
+const classLessons = computed(() => {
+  return lessons.value.filter((lesson) => lesson.type === "Class");
+});
+// Filters only activity lessons
+const activityLessons = computed(() => {
+  return lessons.value.filter((lesson) => lesson.type === "Activity");
+});
 </script>
 
 <template>
@@ -366,13 +409,12 @@ async function placeOrder() {
       </div>
 
       <nav class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">Classes</a>
-        <a href="#">Activities</a>
-        <a href="#">Teachers</a>
-        <a href="#">About</a>
+        <a href="#" @click.prevent="currentView = 'home'">Home</a>
+        <a href="#" @click.prevent="currentView = 'classes'">Classes</a>
+        <a href="#" @click.prevent="currentView = 'activities'">Activities</a>
+        <a href="#" @click.prevent="currentView = 'teachers'">Teachers</a>
+        <a href="#" @click.prevent="currentView = 'about'">About</a>
       </nav>
-
       <div class="nav-actions">
         <button
           class="cart-button"
@@ -395,195 +437,440 @@ async function placeOrder() {
     <!-- Hero -->
     <main>
       <template v-if="!showCart">
-        <section class="hero">
-          <div class="hero-content">
-            <p class="hero-label">AFTER SCHOOL CLASSES & ACTIVITIES</p>
+        <template v-if="currentView === 'home'">
+          <section class="hero">
+            <div class="hero-content">
+              <p class="hero-label">AFTER SCHOOL CLASSES & ACTIVITIES</p>
 
-            <h1>
-              Ignite
-              <span class="yellow-text">Curiosity</span>
-              <span class="blue-text">Beyond School.</span>
-            </h1>
+              <h1>
+                Ignite
+                <span class="yellow-text">Curiosity</span>
+                <span class="blue-text">Beyond School.</span>
+              </h1>
 
-            <p class="hero-description">
-              Engaging classes and activities to help every child explore their
-              interests, build skills and make new friends.
-            </p>
+              <p class="hero-description">
+                Engaging classes and activities to help every child explore
+                their interests, build skills and make new friends.
+              </p>
 
-            <!-- Search -->
-            <div class="search-box">
-              <input
-                v-model="searchText"
-                type="text"
-                placeholder="Search for classes, activities or locations..."
-                @keyup.enter="searchLessons"
-              />
+              <!-- Search -->
+              <div class="search-box">
+                <input
+                  v-model="searchText"
+                  type="text"
+                  placeholder="Search for classes, activities or locations..."
+                  @keyup.enter="searchLessons"
+                />
 
-              <button @click="searchLessons">Search</button>
-            </div>
-
-            <!-- Filters -->
-            <div class="hero-filters">
-              <button class="filter active">▦ All</button>
-
-              <button class="filter">🎓 Classes</button>
-
-              <button class="filter">🏃 Activities</button>
-            </div>
-          </div>
-
-          <!-- Hero visual -->
-          <div class="hero-visual">
-            <div class="shape shape-one"></div>
-            <div class="shape shape-two"></div>
-
-            <img
-              class="hero-kids-image"
-              src="/Images/hero-kids.png"
-              alt="Happy children holding school books"
-            />
-
-            <p class="hero-note">
-              More than<br />
-              just learning
-            </p>
-          </div>
-        </section>
-
-        <!-- Categories -->
-        <section class="categories-section">
-          <div class="section-title">
-            <p>EXPLORE</p>
-            <h2>Something for every interest</h2>
-            <span>
-              Discover after-school activities designed to inspire, challenge
-              and entertain.
-            </span>
-          </div>
-
-          <div class="categories-grid">
-            <article
-              v-for="category in categories"
-              :key="category.name"
-              class="category-card"
-            >
-              <div class="category-icon">
-                {{ category.icon }}
+                <button @click="searchLessons">Search</button>
               </div>
 
-              <h3>{{ category.name }}</h3>
+              <!-- Filters -->
+              <div class="hero-filters">
+                <button class="filter active">▦ All</button>
 
-              <p>
-                {{ category.description }}
-              </p>
-            </article>
-          </div>
-        </section>
+                <button class="filter">🎓 Classes</button>
 
-        <!-- Classes & Activities -->
-        <section class="lessons-section">
-          <div class="lessons-header">
-            <div>
-              <p class="small-heading">DISCOVER</p>
-
-              <h2>Popular Classes & Activities</h2>
-
-              <p class="lesson-count">
-                {{ sortedLessons.length }} experiences available
-              </p>
+                <button class="filter">🏃 Activities</button>
+              </div>
             </div>
 
-            <!-- Sorting -->
-            <div class="sorting">
-              <div class="teacher-filter">
+            <!-- Hero visual -->
+            <div class="hero-visual">
+              <div class="shape shape-one"></div>
+              <div class="shape shape-two"></div>
+
+              <img
+                class="hero-kids-image"
+                src="/Images/hero-kids.png"
+                alt="Happy children holding school books"
+              />
+
+              <p class="hero-note">
+                More than<br />
+                just learning
+              </p>
+            </div>
+          </section>
+
+          <!-- Categories -->
+          <section class="categories-section">
+            <div class="section-title">
+              <p>EXPLORE</p>
+              <h2>Something for every interest</h2>
+              <span>
+                Discover after-school activities designed to inspire, challenge
+                and entertain.
+              </span>
+            </div>
+
+            <div class="categories-grid">
+              <article
+                v-for="category in categories"
+                :key="category.name"
+                class="category-card"
+              >
+                <div class="category-icon">
+                  {{ category.icon }}
+                </div>
+
+                <h3>{{ category.name }}</h3>
+
+                <p>
+                  {{ category.description }}
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <!-- Classes & Activities -->
+          <section class="lessons-section">
+            <div class="lessons-header">
+              <div>
+                <p class="small-heading">DISCOVER</p>
+
+                <h2>Popular Classes & Activities</h2>
+
+                <p class="lesson-count">
+                  {{ sortedLessons.length }} experiences available
+                </p>
+              </div>
+
+              <!-- Sorting -->
+              <div class="sorting">
+                <div class="teacher-filter">
+                  <label>
+                    Teacher
+
+                    <select v-model="selectedTeacher" @change="filterByTeacher">
+                      <option value="">All Teachers</option>
+
+                      <option
+                        v-for="teacher in teachers"
+                        :key="teacher._id"
+                        :value="teacher._id"
+                      >
+                        {{ teacher.firstName }} {{ teacher.lastName }}
+                      </option>
+                    </select>
+                  </label>
+                </div>
                 <label>
-                  Teacher
+                  Sort by
 
-                  <select v-model="selectedTeacher" @change="filterByTeacher">
-                    <option value="">All Teachers</option>
+                  <select v-model="sortBy">
+                    <option value="subject">Subject</option>
 
-                    <option
-                      v-for="teacher in teachers"
-                      :key="teacher._id"
-                      :value="teacher._id"
-                    >
-                      {{ teacher.firstName }} {{ teacher.lastName }}
-                    </option>
+                    <option value="location">Location</option>
+
+                    <option value="price">Price</option>
+
+                    <option value="spaces">Spaces</option>
+                  </select>
+                </label>
+
+                <label>
+                  Order
+
+                  <select v-model="sortOrder">
+                    <option value="ascending">Ascending</option>
+
+                    <option value="descending">Descending</option>
                   </select>
                 </label>
               </div>
-              <label>
-                Sort by
-
-                <select v-model="sortBy">
-                  <option value="subject">Subject</option>
-
-                  <option value="location">Location</option>
-
-                  <option value="price">Price</option>
-
-                  <option value="spaces">Spaces</option>
-                </select>
-              </label>
-
-              <label>
-                Order
-
-                <select v-model="sortOrder">
-                  <option value="ascending">Ascending</option>
-
-                  <option value="descending">Descending</option>
-                </select>
-              </label>
             </div>
-          </div>
 
-          <!-- Lesson Cards -->
-          <div class="lesson-grid">
-            <article
-              v-for="lesson in sortedLessons"
-              :key="lesson.id"
-              class="lesson-card"
-            >
-              <div class="lesson-image">
-                <img :src="lesson.image" :alt="lesson.subject" />
+            <!-- Lesson Cards -->
+            <div class="lesson-grid">
+              <article
+                v-for="lesson in sortedLessons"
+                :key="lesson.id"
+                class="lesson-card"
+              >
+                <div class="lesson-image">
+                  <img :src="lesson.image" :alt="lesson.subject" />
 
-                <span class="lesson-type" :class="lesson.type.toLowerCase()">
-                  {{ lesson.type }}
-                </span>
-              </div>
-
-              <div class="lesson-content">
-                <div class="lesson-title">
-                  <h3>
-                    {{ lesson.subject }}
-                  </h3>
-
-                  <strong> £{{ lesson.price }} </strong>
-                </div>
-
-                <p class="lesson-info">📍 {{ lesson.location }}</p>
-
-                <p class="lesson-info">👤 {{ lesson.teacher }}</p>
-
-                <div class="lesson-bottom">
-                  <span class="spaces">
-                    {{
-                      lesson.spaces === 0
-                        ? "Fully booked"
-                        : lesson.spaces + " spaces left"
-                    }}
+                  <span class="lesson-type" :class="lesson.type.toLowerCase()">
+                    {{ lesson.type }}
                   </span>
+                </div>
 
-                  <button
-                    @click="addToCart(lesson)"
-                    :disabled="lesson.spaces === 0"
-                  >
-                    {{ lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart" }}
-                  </button>
+                <div class="lesson-content">
+                  <div class="lesson-title">
+                    <h3>
+                      {{ lesson.subject }}
+                    </h3>
+
+                    <strong> £{{ lesson.price }} </strong>
+                  </div>
+
+                  <p class="lesson-info">📍 {{ lesson.location }}</p>
+
+                  <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                  <div class="lesson-bottom">
+                    <span class="spaces">
+                      {{
+                        lesson.spaces === 0
+                          ? "Fully booked"
+                          : lesson.spaces + " spaces left"
+                      }}
+                    </span>
+
+                    <button
+                      @click="addToCart(lesson)"
+                      :disabled="lesson.spaces === 0"
+                    >
+                      {{ lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart" }}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </template>
+        <template v-if="currentView === 'classes'">
+          <section class="lessons-section">
+            <div class="lessons-header">
+              <div>
+                <p class="small-heading">DISCOVER</p>
+                <h2>Classes</h2>
+                <p class="lesson-count">
+                  {{ classLessons.length }} classes available
+                </p>
+              </div>
+            </div>
+
+            <div class="lesson-grid">
+              <article
+                v-for="lesson in classLessons"
+                :key="lesson.id"
+                class="lesson-card"
+              >
+                <div class="lesson-image">
+                  <img :src="lesson.image" :alt="lesson.subject" />
+
+                  <span class="lesson-type" :class="lesson.type.toLowerCase()">
+                    {{ lesson.type }}
+                  </span>
+                </div>
+
+                <div class="lesson-content">
+                  <div class="lesson-title">
+                    <h3>{{ lesson.subject }}</h3>
+                    <strong>£{{ lesson.price }}</strong>
+                  </div>
+
+                  <p class="lesson-info">📍 {{ lesson.location }}</p>
+                  <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                  <div class="lesson-bottom">
+                    <span class="spaces">
+                      {{
+                        lesson.spaces === 0
+                          ? "Fully booked"
+                          : lesson.spaces + " spaces left"
+                      }}
+                    </span>
+
+                    <button
+                      @click="addToCart(lesson)"
+                      :disabled="lesson.spaces === 0"
+                    >
+                      {{ lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart" }}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </template>
+        <template v-if="currentView === 'activities'">
+          <section class="lessons-section">
+            <div class="lessons-header">
+              <div>
+                <p class="small-heading">DISCOVER</p>
+                <h2>Activities</h2>
+                <p class="lesson-count">
+                  {{ activityLessons.length }} activities available
+                </p>
+              </div>
+            </div>
+
+            <div class="lesson-grid">
+              <article
+                v-for="lesson in activityLessons"
+                :key="lesson.id"
+                class="lesson-card"
+              >
+                <div class="lesson-image">
+                  <img :src="lesson.image" :alt="lesson.subject" />
+
+                  <span class="lesson-type" :class="lesson.type.toLowerCase()">
+                    {{ lesson.type }}
+                  </span>
+                </div>
+
+                <div class="lesson-content">
+                  <div class="lesson-title">
+                    <h3>{{ lesson.subject }}</h3>
+                    <strong>£{{ lesson.price }}</strong>
+                  </div>
+
+                  <p class="lesson-info">📍 {{ lesson.location }}</p>
+                  <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                  <div class="lesson-bottom">
+                    <span class="spaces">
+                      {{
+                        lesson.spaces === 0
+                          ? "Fully booked"
+                          : lesson.spaces + " spaces left"
+                      }}
+                    </span>
+
+                    <button
+                      @click="addToCart(lesson)"
+                      :disabled="lesson.spaces === 0"
+                    >
+                      {{ lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart" }}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </template>
+        <template v-if="currentView === 'teachers'">
+          <section class="lessons-section">
+            <div class="lessons-header">
+              <div>
+                <p class="small-heading">OUR TEAM</p>
+                <h2>Meet Our Teachers</h2>
+                <p class="lesson-count">
+                  Select a teacher to view their lessons.
+                </p>
+              </div>
+            </div>
+
+            <div class="teachers-layout">
+              <!-- Teachers List -->
+              <div class="teachers-list">
+                <article
+                  v-for="teacher in teachers"
+                  :key="teacher._id"
+                  class="teacher-list-card"
+                  :class="{ active: selectedTeacher === teacher._id }"
+                  @click="showTeacherLessons(teacher)"
+                >
+                  <div class="teacher-avatar">👩‍🏫</div>
+
+                  <div>
+                    <h3>{{ teacher.firstName }} {{ teacher.lastName }}</h3>
+
+                    <p>
+                      {{ teacher.lessonTopics.join(", ") }}
+                    </p>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Teacher Lessons -->
+              <div class="teacher-lessons-panel">
+                <div v-if="selectedTeacherLessons.length === 0">
+                  <p class="small-heading">TEACHER LESSONS</p>
+
+                  <h2>Select a Teacher</h2>
+
+                  <p>Choose a teacher from the list to view their lessons.</p>
+                </div>
+
+                <div v-else>
+                  <p class="small-heading">TEACHER LESSONS</p>
+
+                  <h2>Lessons by {{ selectedTeacherName }}</h2>
+
+                  <div class="lesson-grid">
+                    <article
+                      v-for="lesson in selectedTeacherLessons"
+                      :key="lesson.id"
+                      class="lesson-card"
+                    >
+                      <div class="lesson-image">
+                        <img :src="lesson.image" :alt="lesson.subject" />
+
+                        <span
+                          class="lesson-type"
+                          :class="lesson.type.toLowerCase()"
+                        >
+                          {{ lesson.type }}
+                        </span>
+                      </div>
+
+                      <div class="lesson-content">
+                        <div class="lesson-title">
+                          <h3>{{ lesson.subject }}</h3>
+
+                          <strong>£{{ lesson.price }}</strong>
+                        </div>
+
+                        <p class="lesson-info">📍 {{ lesson.location }}</p>
+
+                        <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                        <div class="lesson-bottom">
+                          <span class="spaces">
+                            {{
+                              lesson.spaces === 0
+                                ? "Fully booked"
+                                : lesson.spaces + " spaces left"
+                            }}
+                          </span>
+
+                          <button
+                            @click="addToCart(lesson)"
+                            :disabled="lesson.spaces === 0"
+                          >
+                            {{
+                              lesson.spaces === 0
+                                ? "Sold Out"
+                                : "🛒 Add to Cart"
+                            }}
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
                 </div>
               </div>
-            </article>
+            </div>
+          </section>
+        </template>
+      </template>
+      <!-- about page -->
+      <template v-if="currentView === 'about'">
+        <section class="about-section">
+          <div class="about-content">
+            <p class="small-heading">ABOUT BEYONDBELL</p>
+
+            <h2>Learning Beyond the Classroom</h2>
+
+            <p>
+              BeyondBell helps parents discover engaging after-school classes
+              and activities for children.
+            </p>
+
+            <p>
+              From coding and science to music, sports and creative arts,
+              children can explore their interests, develop new skills and enjoy
+              learning in a fun and supportive environment.
+            </p>
+
+            <p>
+              Our aim is to make it easier for families to find suitable
+              activities, view available spaces and book lessons in one place.
+            </p>
           </div>
         </section>
       </template>

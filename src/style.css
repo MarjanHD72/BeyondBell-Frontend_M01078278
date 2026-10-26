@@ -1119,6 +1119,124 @@
   color: #0b1933;
 }
 
+/* teachers page styles */
+/* Teachers page layout */
+.teachers-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Left teacher list */
+.teachers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Individual teacher */
+.teacher-list-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: white;
+  padding: 16px;
+  border: 1px solid #dfe5ec;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.teacher-list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.teacher-list-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.teacher-list-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #6f7f92;
+}
+
+/* Teacher icon */
+.teacher-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fff2d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* Right lesson area */
+.teacher-lessons-panel {
+  background: white;
+  border: 1px solid #dfe5ec;
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 350px;
+}
+/* Centres the selected teacher lesson card */
+.teacher-lessons-panel .lesson-grid {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+/* Highlights the selected teacher */
+.teacher-list-card.active {
+  border: 2px solid #1f4f8a;
+  background: #f3f7fc;
+}
+/* Keeps the teacher lesson card at a neat width */
+.teacher-lessons-panel .lesson-card {
+  width: 280px;
+}
+.teacher-list-card.active h3 {
+  color: #1f4f8a;
+}
+/* About page styles */
+/* About page */
+.about-section {
+  padding: 70px 8%;
+  background: #f8fafc;
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.about-content {
+  max-width: 800px;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.about-content h2 {
+  margin-top: 8px;
+  margin-bottom: 24px;
+  font-size: 32px;
+  color: #1f3557;
+}
+
+.about-content p {
+  line-height: 1.8;
+  color: #5f6f82;
+  margin-bottom: 18px;
+  font-size: 16px;
+}
+
 /*                                   Responsive                               */
 
 @media (max-width: 1100px) {
