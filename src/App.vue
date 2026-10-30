@@ -236,7 +236,7 @@ async function filterByTeacher() {
     if (selectedTeacher.value === "") {
       const response = await fetch("http://localhost:3000/lessons");
       const data = await response.json();
-      selectedTeacherLessons.value = data.map((lesson) => ({
+      lessons.value = data.map((lesson) => ({
         ...lesson,
         id: lesson._id,
         subject: lesson.topic,
@@ -277,12 +277,18 @@ async function showTeacherLessons(teacher) {
 
     const data = await response.json();
 
-    selectedTeacherLessons.value = data.map((lesson) => ({
-      ...lesson,
-      id: lesson._id,
-      subject: lesson.topic,
-      spaces: lesson.space,
-    }));
+    selectedTeacherLessons.value = data.map((lesson) => {
+      const currentLesson = lessons.value.find(
+        (item) => item.id === lesson._id,
+      );
+
+      return {
+        ...lesson,
+        id: lesson._id,
+        subject: lesson.topic,
+        spaces: currentLesson ? currentLesson.spaces : lesson.space,
+      };
+    });
   } catch (error) {
     console.error("Failed to get teacher lessons:", error);
   }
@@ -300,28 +306,44 @@ const isCheckoutValid = computed(() => {
 function addToCart(lesson) {
   if (lesson.spaces > 0) {
     cart.value.push(lesson);
-    lesson.spaces--;
+
+    // Update lesson in main lessons list
+    const mainLesson = lessons.value.find((item) => item.id === lesson.id);
+
+    if (mainLesson) {
+      mainLesson.spaces--;
+    }
+
+    // Update lesson inside teacher modal too
+    const teacherLesson = selectedTeacherLessons.value.find(
+      (item) => item.id === lesson.id,
+    );
+
+    if (teacherLesson && teacherLesson !== mainLesson) {
+      teacherLesson.spaces--;
+    }
   }
 }
 
 // Removes one space of a lesson from the cart.
 function removeFromCart(lessonId) {
-  // Find one matching lesson inside the cart.
   const itemIndex = cart.value.findIndex((item) => item.id === lessonId);
 
-  // Continue only if the lesson exists in the cart.
   if (itemIndex !== -1) {
-    // Find the original lesson.
-    const originalLesson = lessons.value.find(
+    const mainLesson = lessons.value.find((lesson) => lesson.id === lessonId);
+
+    if (mainLesson) {
+      mainLesson.spaces++;
+    }
+
+    const teacherLesson = selectedTeacherLessons.value.find(
       (lesson) => lesson.id === lessonId,
     );
 
-    // Return one available space to the lesson.
-    if (originalLesson) {
-      originalLesson.spaces++;
+    if (teacherLesson && teacherLesson !== mainLesson) {
+      teacherLesson.spaces++;
     }
 
-    // Remove one item from the cart.
     cart.value.splice(itemIndex, 1);
   }
 }
@@ -390,6 +412,12 @@ async function placeOrder() {
     console.error("Failed to place order:", error);
   }
 }
+// Change page and close cart
+function changeView(view) {
+  currentView.value = view;
+  showCart.value = false;
+}
+
 // Stores the page section currently selected by the user
 const currentView = ref("home");
 // Filters only class lessons
@@ -414,11 +442,11 @@ const activityLessons = computed(() => {
       </div>
 
       <nav class="nav-links">
-        <a href="#" @click.prevent="currentView = 'home'">Home</a>
-        <a href="#" @click.prevent="currentView = 'classes'">Classes</a>
-        <a href="#" @click.prevent="currentView = 'activities'">Activities</a>
-        <a href="#" @click.prevent="currentView = 'teachers'">Teachers</a>
-        <a href="#" @click.prevent="currentView = 'about'">About</a>
+        <a href="#" @click.prevent="changeView('home')">Home</a>
+        <a href="#" @click.prevent="changeView('classes')">Classes</a>
+        <a href="#" @click.prevent="changeView('activities')">Activities</a>
+        <a href="#" @click.prevent="changeView('teachers')">Teachers</a>
+        <a href="#" @click.prevent="changeView('about')">About</a>
       </nav>
       <div class="nav-actions">
         <button
