@@ -218,6 +218,9 @@ const selectedTeacher = ref("");
 // Stores the lessons for the selected teacher
 const selectedTeacherLessons = ref([]);
 
+// Stores the full selected teacher details
+const selectedTeacherDetails = ref(null);
+
 // Stores the selected teacher name
 const selectedTeacherName = ref("");
 
@@ -262,6 +265,8 @@ async function filterByTeacher() {
 // Gets the lessons for the selected teacher
 async function showTeacherLessons(teacher) {
   selectedTeacher.value = teacher._id;
+
+  selectedTeacherDetails.value = teacher;
 
   selectedTeacherName.value = teacher.firstName + " " + teacher.lastName;
 
@@ -467,11 +472,29 @@ const activityLessons = computed(() => {
 
               <!-- Filters -->
               <div class="hero-filters">
-                <button class="filter active">▦ All</button>
+                <button
+                  class="filter"
+                  :class="{ active: currentView === 'home' }"
+                  @click="currentView = 'home'"
+                >
+                  ▦ All
+                </button>
 
-                <button class="filter">🎓 Classes</button>
+                <button
+                  class="filter"
+                  :class="{ active: currentView === 'classes' }"
+                  @click="currentView = 'classes'"
+                >
+                  🎓 Classes
+                </button>
 
-                <button class="filter">🏃 Activities</button>
+                <button
+                  class="filter"
+                  :class="{ active: currentView === 'activities' }"
+                  @click="currentView = 'activities'"
+                >
+                  🏃 Activities
+                </button>
               </div>
             </div>
 
@@ -630,8 +653,9 @@ const activityLessons = computed(() => {
             </div>
           </section>
         </template>
+        <!-- Classess Page  -->
         <template v-if="currentView === 'classes'">
-          <section class="lessons-section">
+          <section class="lessons-section page-lessons-section">
             <div class="lessons-header">
               <div>
                 <p class="small-heading">DISCOVER</p>
@@ -686,8 +710,10 @@ const activityLessons = computed(() => {
             </div>
           </section>
         </template>
+
+        <!-- Activities Page  -->
         <template v-if="currentView === 'activities'">
-          <section class="lessons-section">
+          <section class="lessons-section page-lessons-section">
             <div class="lessons-header">
               <div>
                 <p class="small-heading">DISCOVER</p>
@@ -742,6 +768,7 @@ const activityLessons = computed(() => {
             </div>
           </section>
         </template>
+        <!-- teachers page -->
         <template v-if="currentView === 'teachers'">
           <section class="lessons-section">
             <div class="lessons-header">
@@ -749,104 +776,141 @@ const activityLessons = computed(() => {
                 <p class="small-heading">OUR TEAM</p>
                 <h2>Meet Our Teachers</h2>
                 <p class="lesson-count">
-                  Select a teacher to view their lessons.
+                  Meet our teachers and explore their lessons.
                 </p>
               </div>
             </div>
 
-            <div class="teachers-layout">
-              <!-- Teachers List -->
-              <div class="teachers-list">
-                <article
-                  v-for="teacher in teachers"
-                  :key="teacher._id"
-                  class="teacher-list-card"
-                  :class="{ active: selectedTeacher === teacher._id }"
-                  @click="showTeacherLessons(teacher)"
-                >
-                  <div class="teacher-avatar">👩‍🏫</div>
+            <div class="lesson-grid">
+              <article
+                v-for="teacher in teachers"
+                :key="teacher._id"
+                class="lesson-card"
+              >
+                <div class="lesson-content">
+                  <img
+                    :src="teacher.image"
+                    :alt="teacher.firstName + ' ' + teacher.lastName"
+                    class="teacher-avatar"
+                  />
 
-                  <div>
-                    <h3>{{ teacher.firstName }} {{ teacher.lastName }}</h3>
-
-                    <p>
-                      {{ teacher.lessonTopics.join(", ") }}
-                    </p>
+                  <div class="lesson-title">
+                    <h3>
+                      {{ teacher.firstName }}
+                      {{ teacher.lastName }}
+                    </h3>
                   </div>
-                </article>
-              </div>
 
-              <!-- Teacher Lessons -->
-              <div class="teacher-lessons-panel">
-                <div v-if="selectedTeacherLessons.length === 0">
-                  <p class="small-heading">TEACHER LESSONS</p>
+                  <p class="lesson-info">
+                    {{ teacher.lessonTopics.join(", ") }}
+                  </p>
 
-                  <h2>Select a Teacher</h2>
-
-                  <p>Choose a teacher from the list to view their lessons.</p>
-                </div>
-
-                <div v-else>
-                  <p class="small-heading">TEACHER LESSONS</p>
-
-                  <h2>Lessons by {{ selectedTeacherName }}</h2>
-
-                  <div class="lesson-grid">
-                    <article
-                      v-for="lesson in selectedTeacherLessons"
-                      :key="lesson.id"
-                      class="lesson-card"
-                    >
-                      <div class="lesson-image">
-                        <img :src="lesson.image" :alt="lesson.subject" />
-
-                        <span
-                          class="lesson-type"
-                          :class="lesson.type.toLowerCase()"
-                        >
-                          {{ lesson.type }}
-                        </span>
-                      </div>
-
-                      <div class="lesson-content">
-                        <div class="lesson-title">
-                          <h3>{{ lesson.subject }}</h3>
-
-                          <strong>£{{ lesson.price }}</strong>
-                        </div>
-
-                        <p class="lesson-info">📍 {{ lesson.location }}</p>
-
-                        <p class="lesson-info">👤 {{ lesson.teacher }}</p>
-
-                        <div class="lesson-bottom">
-                          <span class="spaces">
-                            {{
-                              lesson.spaces === 0
-                                ? "Fully booked"
-                                : lesson.spaces + " spaces left"
-                            }}
-                          </span>
-
-                          <button
-                            @click="addToCart(lesson)"
-                            :disabled="lesson.spaces === 0"
-                          >
-                            {{
-                              lesson.spaces === 0
-                                ? "Sold Out"
-                                : "🛒 Add to Cart"
-                            }}
-                          </button>
-                        </div>
-                      </div>
-                    </article>
+                  <div class="lesson-bottom">
+                    <button @click="showTeacherLessons(teacher)">
+                      View Teacher
+                    </button>
                   </div>
                 </div>
-              </div>
+              </article>
             </div>
           </section>
         </template>
+        <!-- Teacher Modal -->
+        <Transition name="teacher-modal">
+          <div
+            v-if="selectedTeacherDetails"
+            class="teacher-modal-overlay"
+            @click.self="selectedTeacherDetails = null"
+          >
+            <div class="teacher-modal">
+              <button
+                class="teacher-modal-close"
+                @click="selectedTeacherDetails = null"
+              >
+                ×
+              </button>
+
+              <div class="teacher-modal-header">
+                <img
+                  :src="selectedTeacherDetails.image"
+                  :alt="
+                    selectedTeacherDetails.firstName +
+                    ' ' +
+                    selectedTeacherDetails.lastName
+                  "
+                  class="teacher-avatar"
+                />
+
+                <div>
+                  <p class="small-heading">TEACHER PROFILE</p>
+
+                  <h2>
+                    {{ selectedTeacherDetails.firstName }}
+                    {{ selectedTeacherDetails.lastName }}
+                  </h2>
+
+                  <p>
+                    {{ selectedTeacherDetails.lessonTopics.join(", ") }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="teacher-modal-lessons">
+                <p class="small-heading">AVAILABLE LESSON</p>
+
+                <div class="lesson-grid">
+                  <article
+                    v-for="lesson in selectedTeacherLessons"
+                    :key="lesson.id"
+                    class="lesson-card"
+                  >
+                    <div class="lesson-image">
+                      <img :src="lesson.image" :alt="lesson.subject" />
+
+                      <span
+                        class="lesson-type"
+                        :class="lesson.type.toLowerCase()"
+                      >
+                        {{ lesson.type }}
+                      </span>
+                    </div>
+
+                    <div class="lesson-content">
+                      <div class="lesson-title">
+                        <h3>{{ lesson.subject }}</h3>
+
+                        <strong>£{{ lesson.price }}</strong>
+                      </div>
+
+                      <p class="lesson-info">📍 {{ lesson.location }}</p>
+
+                      <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                      <div class="lesson-bottom">
+                        <span class="spaces">
+                          {{
+                            lesson.spaces === 0
+                              ? "Fully booked"
+                              : lesson.spaces + " spaces left"
+                          }}
+                        </span>
+
+                        <button
+                          @click="addToCart(lesson)"
+                          :disabled="lesson.spaces === 0"
+                        >
+                          {{
+                            lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart"
+                          }}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div></Transition
+        >
       </template>
       <!-- about page -->
       <template v-if="currentView === 'about'">

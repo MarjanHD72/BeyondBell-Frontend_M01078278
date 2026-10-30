@@ -937,14 +937,14 @@
 ================================= */
 
 .lessons-section {
-  padding: 80px 7%;
+  padding: 10px 5%;
 
   background-color: #f3f6fa;
 }
 
 .lessons-header {
   max-width: 1300px;
-  margin: 0 auto 35px;
+  margin: 0 auto 10px;
 
   display: flex;
   justify-content: space-between;
@@ -1066,7 +1066,7 @@
 }
 
 .lesson-info {
-  margin-top: 10px;
+  margin-top: 7px;
 
   color: #66758a;
 
@@ -1074,8 +1074,8 @@
 }
 
 .lesson-bottom {
-  margin-top: 18px;
-  padding-top: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
 
   display: flex;
   align-items: center;
@@ -1120,6 +1120,7 @@
 }
 
 /* teachers page styles */
+
 /* Teachers page layout */
 .teachers-layout {
   display: grid;
@@ -1134,25 +1135,57 @@
   flex-direction: column;
   gap: 12px;
 }
+.teacher-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 3px solid #f3e7c9;
+  background: #fff;
+}
 
+.teacher-avatar-large {
+  width: 88px;
+  height: 88px;
+}
+
+.teacher-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.teacher-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 /* Individual teacher */
 .teacher-list-card {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: white;
-  padding: 16px;
-  border: 1px solid #dfe5ec;
+
+  background: transparent;
+  padding: 14px 16px;
+
+  border: 1px solid transparent;
   border-radius: 12px;
+
   cursor: pointer;
   transition: 0.2s;
 }
 
 .teacher-list-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background: white;
+  border-color: #dfe5ec;
+  transform: translateX(4px);
 }
-
+.teacher-list-card.active {
+  background: #fff7e6;
+  border-color: #f4b23c;
+}
 .teacher-list-card h3 {
   margin: 0 0 6px;
   font-size: 16px;
@@ -1191,17 +1224,116 @@
   justify-content: center;
   margin-top: 24px;
 }
-/* Highlights the selected teacher */
-.teacher-list-card.active {
-  border: 2px solid #1f4f8a;
-  background: #f3f7fc;
-}
+
 /* Keeps the teacher lesson card at a neat width */
 .teacher-lessons-panel .lesson-card {
   width: 280px;
 }
 .teacher-list-card.active h3 {
   color: #1f4f8a;
+}
+
+/* Teacher modal background */
+.teacher-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 24, 49, 0.55);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* Modal box */
+.teacher-modal {
+  position: relative;
+  background: white;
+
+  width: min(780px, 90vw);
+  max-height: 90vh;
+
+  border-radius: 20px;
+  padding: 26px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Close button */
+.teacher-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f1f4f8;
+  color: #0d2344;
+
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Teacher information */
+.teacher-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  border-bottom: 1px solid #e5e9ef;
+}
+
+.teacher-modal-header .teacher-avatar {
+  width: 70px;
+  height: 70px;
+  font-size: 34px;
+}
+
+/* Lessons inside modal */
+.teacher-modal-lessons .lesson-grid {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.teacher-modal-lessons .lesson-card {
+  width: 230px;
+}
+/* Vue transition for teacher modal */
+.teacher-modal-enter-active,
+.teacher-modal-leave-active {
+  transition: opacity 0.25s ease;
+}
+.teacher-modal-lessons .lesson-image {
+  height: 135px;
+}
+.teacher-modal-enter-from,
+.teacher-modal-leave-to {
+  opacity: 0;
+}
+
+/* Animate the modal box itself */
+.teacher-modal-enter-active .teacher-modal,
+.teacher-modal-leave-active .teacher-modal {
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.teacher-modal-enter-from .teacher-modal,
+.teacher-modal-leave-to .teacher-modal {
+  transform: translateY(20px) scale(0.97);
+  opacity: 0;
 }
 /* About page styles */
 /* About page */
