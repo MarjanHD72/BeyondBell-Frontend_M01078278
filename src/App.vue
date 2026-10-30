@@ -572,143 +572,164 @@ const activityLessons = computed(() => {
               />
             </div>
           </section>
-
-          <!-- Categories -->
-          <section class="categories-section">
-            <div class="section-title">
-              <p>EXPLORE</p>
-              <h2>Something for every interest</h2>
-              <span>
-                Discover after-school activities designed to inspire, challenge
-                and entertain.
-              </span>
-            </div>
-
-            <div class="categories-grid">
-              <article
-                v-for="category in categories"
-                :key="category.name"
-                class="category-card"
-              >
-                <div class="category-icon">
-                  {{ category.icon }}
-                </div>
-
-                <h3>{{ category.name }}</h3>
-
-                <p>
-                  {{ category.description }}
-                </p>
-              </article>
-            </div>
-          </section>
-
-          <!-- Classes & Activities -->
-          <section class="lessons-section">
-            <div class="lessons-header">
-              <div>
-                <p class="small-heading">DISCOVER</p>
-
-                <h2>Popular Classes & Activities</h2>
-
-                <p class="lesson-count">
-                  {{ sortedLessons.length }} experiences available
-                </p>
+          <div
+            class="home-sections"
+            :class="{ 'search-active': searchText.trim() !== '' }"
+          >
+            <!-- Categories -->
+            <section class="categories-section">
+              <div class="section-title">
+                <p>EXPLORE</p>
+                <h2>Something for every interest</h2>
+                <span>
+                  Discover after-school activities designed to inspire,
+                  challenge and entertain.
+                </span>
               </div>
 
-              <!-- Sorting -->
-              <div class="sorting">
-                <div class="teacher-filter">
-                  <label>
-                    Teacher
+              <div class="categories-grid">
+                <article
+                  v-for="category in categories"
+                  :key="category.name"
+                  class="category-card"
+                >
+                  <div class="category-icon">
+                    {{ category.icon }}
+                  </div>
 
-                    <select v-model="selectedTeacher" @change="filterByTeacher">
-                      <option value="">All Teachers</option>
+                  <h3>{{ category.name }}</h3>
 
-                      <option
-                        v-for="teacher in teachers"
-                        :key="teacher._id"
-                        :value="teacher._id"
+                  <p>
+                    {{ category.description }}
+                  </p>
+                </article>
+              </div>
+            </section>
+
+            <!-- Classes & Activities -->
+            <section class="lessons-section">
+              <div class="lessons-header">
+                <div>
+                  <p class="small-heading">DISCOVER</p>
+
+                  <h2>Popular Classes & Activities</h2>
+
+                  <p class="lesson-count">
+                    {{ sortedLessons.length }} experiences available
+                  </p>
+                </div>
+
+                <!-- Sorting -->
+                <div class="sorting">
+                  <div class="teacher-filter">
+                    <label>
+                      Teacher
+
+                      <select
+                        v-model="selectedTeacher"
+                        @change="filterByTeacher"
                       >
-                        {{ teacher.firstName }} {{ teacher.lastName }}
-                      </option>
+                        <option value="">All Teachers</option>
+
+                        <option
+                          v-for="teacher in teachers"
+                          :key="teacher._id"
+                          :value="teacher._id"
+                        >
+                          {{ teacher.firstName }} {{ teacher.lastName }}
+                        </option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    Sort by
+
+                    <select v-model="sortBy">
+                      <option value="subject">Subject</option>
+
+                      <option value="location">Location</option>
+
+                      <option value="price">Price</option>
+
+                      <option value="spaces">Spaces</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Order
+
+                    <select v-model="sortOrder">
+                      <option value="ascending">Ascending</option>
+
+                      <option value="descending">Descending</option>
                     </select>
                   </label>
                 </div>
-                <label>
-                  Sort by
-
-                  <select v-model="sortBy">
-                    <option value="subject">Subject</option>
-
-                    <option value="location">Location</option>
-
-                    <option value="price">Price</option>
-
-                    <option value="spaces">Spaces</option>
-                  </select>
-                </label>
-
-                <label>
-                  Order
-
-                  <select v-model="sortOrder">
-                    <option value="ascending">Ascending</option>
-
-                    <option value="descending">Descending</option>
-                  </select>
-                </label>
               </div>
-            </div>
 
-            <!-- Lesson Cards -->
-            <div class="lesson-grid">
-              <article
-                v-for="lesson in sortedLessons"
-                :key="lesson.id"
-                class="lesson-card"
-              >
-                <div class="lesson-image">
-                  <img :src="lesson.image" :alt="lesson.subject" />
+              <!-- Lesson Cards -->
+              <div class="lesson-grid">
+                <article
+                  v-for="lesson in sortedLessons"
+                  :key="lesson.id"
+                  class="lesson-card"
+                >
+                  <div class="lesson-image">
+                    <img :src="lesson.image" :alt="lesson.subject" />
 
-                  <span class="lesson-type" :class="lesson.type.toLowerCase()">
-                    {{ lesson.type }}
-                  </span>
-                </div>
-
-                <div class="lesson-content">
-                  <div class="lesson-title">
-                    <h3>
-                      {{ lesson.subject }}
-                    </h3>
-
-                    <strong> £{{ lesson.price }} </strong>
-                  </div>
-
-                  <p class="lesson-info">📍 {{ lesson.location }}</p>
-
-                  <p class="lesson-info">👤 {{ lesson.teacher }}</p>
-
-                  <div class="lesson-bottom">
-                    <span class="spaces">
-                      {{
-                        lesson.spaces === 0
-                          ? "Fully booked"
-                          : lesson.spaces + " spaces left"
-                      }}
-                    </span>
-
-                    <button
-                      @click="addToCart(lesson)"
-                      :disabled="lesson.spaces === 0"
+                    <span
+                      class="lesson-type"
+                      :class="lesson.type.toLowerCase()"
                     >
-                      {{ lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart" }}
-                    </button>
+                      {{ lesson.type }}
+                    </span>
                   </div>
-                </div>
-              </article>
-            </div>
-          </section>
+
+                  <div class="lesson-content">
+                    <div class="lesson-title">
+                      <h3>
+                        {{ lesson.subject }}
+                      </h3>
+
+                      <strong> £{{ lesson.price }} </strong>
+                    </div>
+
+                    <p class="lesson-info">📍 {{ lesson.location }}</p>
+
+                    <p class="lesson-info">👤 {{ lesson.teacher }}</p>
+
+                    <div class="lesson-bottom">
+                      <span class="spaces">
+                        {{
+                          lesson.spaces === 0
+                            ? "Fully booked"
+                            : lesson.spaces + " spaces left"
+                        }}
+                      </span>
+
+                      <button
+                        @click="addToCart(lesson)"
+                        :disabled="lesson.spaces === 0"
+                      >
+                        {{
+                          lesson.spaces === 0 ? "Sold Out" : "🛒 Add to Cart"
+                        }}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+              <div v-if="lessons.length === 0" class="no-results">
+                <div class="no-results-icon">🔍</div>
+
+                <h3>No lessons found</h3>
+
+                <p>
+                  Try searching for a different class, activity or location.
+                </p>
+              </div>
+            </section>
+          </div>
         </template>
         <!-- Classess Page  -->
         <template v-if="currentView === 'classes'">

@@ -39,7 +39,7 @@
   color: white;
   text-decoration: none;
   font-size: 20px;
-   padding: 8px 14px;
+  padding: 8px 14px;
   border-radius: 20px;
   transition: 0.2s ease;
 }
@@ -735,7 +735,38 @@
 
   cursor: pointer;
 }
+.no-results {
+  max-width: 520px;
+  margin: 35px auto 0;
+  padding: 28px 24px;
 
+  text-align: center;
+
+  color: #5f6f82;
+  font-size: 17px;
+
+  background: white;
+  border: 1px solid #28486f;
+  border-radius: 16px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+.no-results-icon {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.no-results h3 {
+  margin: 0 0 8px;
+  color: #1f3557;
+  font-size: 22px;
+}
+
+.no-results p {
+  margin: 0;
+  color: #7a8797;
+  line-height: 1.5;
+}
 /* Filters */
 
 .hero-filters {
@@ -819,7 +850,28 @@
 
   transform: rotate(-6deg);
 }
+.home-sections {
+  display: flex;
+  flex-direction: column;
+}
 
+/* Normal order */
+.home-sections .categories-section {
+  order: 1;
+}
+
+.home-sections .lessons-section {
+  order: 2;
+}
+
+/* When searching */
+.home-sections.search-active .lessons-section {
+  order: 1;
+}
+
+.home-sections.search-active .categories-section {
+  order: 2;
+}
 /* Responsive */
 
 @media (max-width: 900px) {
