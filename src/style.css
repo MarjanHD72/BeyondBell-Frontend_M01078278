@@ -39,12 +39,21 @@
   color: white;
   text-decoration: none;
   font-size: 20px;
+   padding: 8px 14px;
+  border-radius: 20px;
+  transition: 0.2s ease;
 }
 
 .nav-links a:hover {
   color: #ffb31a;
 }
-
+.nav-links a.active {
+  color: #049df0;
+  background: #ecf8ff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+}
 .nav-actions {
   display: flex;
   align-items: center;

@@ -442,11 +442,45 @@ const activityLessons = computed(() => {
       </div>
 
       <nav class="nav-links">
-        <a href="#" @click.prevent="changeView('home')">Home</a>
-        <a href="#" @click.prevent="changeView('classes')">Classes</a>
-        <a href="#" @click.prevent="changeView('activities')">Activities</a>
-        <a href="#" @click.prevent="changeView('teachers')">Teachers</a>
-        <a href="#" @click.prevent="changeView('about')">About</a>
+        <a
+          href="#"
+          :class="{ active: currentView === 'home' }"
+          @click.prevent="changeView('home')"
+        >
+          Home
+        </a>
+
+        <a
+          href="#"
+          :class="{ active: currentView === 'classes' }"
+          @click.prevent="changeView('classes')"
+        >
+          Classes
+        </a>
+
+        <a
+          href="#"
+          :class="{ active: currentView === 'activities' }"
+          @click.prevent="changeView('activities')"
+        >
+          Activities
+        </a>
+
+        <a
+          href="#"
+          :class="{ active: currentView === 'teachers' }"
+          @click.prevent="changeView('teachers')"
+        >
+          Teachers
+        </a>
+
+        <a
+          href="#"
+          :class="{ active: currentView === 'about' }"
+          @click.prevent="changeView('about')"
+        >
+          About
+        </a>
       </nav>
       <div class="nav-actions">
         <button
@@ -536,11 +570,6 @@ const activityLessons = computed(() => {
                 src="/Images/hero-kids.png"
                 alt="Happy children holding school books"
               />
-
-              <p class="hero-note">
-                More than<br />
-                just learning
-              </p>
             </div>
           </section>
 
