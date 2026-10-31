@@ -412,13 +412,7 @@ async function placeOrder() {
     console.error("Failed to place order:", error);
   }
 }
-// Change page and close cart
-function changeView(view) {
-  currentView.value = view;
-  showCart.value = false;
-}
-
-// Stores the page section currently selected by the user
+// Stores the current page
 const currentView = ref("home");
 // Filters only class lessons
 const classLessons = computed(() => {
@@ -428,11 +422,49 @@ const classLessons = computed(() => {
 const activityLessons = computed(() => {
   return lessons.value.filter((lesson) => lesson.type === "Activity");
 });
+// hamburger Menu
+const menuOpen = ref(false);
+// Change page, close cart and mobile menu
+function changeView(view) {
+  currentView.value = view;
+  showCart.value = false;
+  menuOpen.value = false;
+}
+
+// Register form
+const registerName = ref("");
+const registerEmail = ref("");
+const registerPassword = ref("");
+const registerConfirmPassword = ref("");
+
+const registerMessage = ref("");
+
+// Checks if register form is valid
+const registerIsValid = computed(() => {
+  return (
+    registerName.value.trim() !== "" &&
+    registerEmail.value.trim() !== "" &&
+    registerPassword.value !== "" &&
+    registerConfirmPassword.value !== "" &&
+    registerPassword.value === registerConfirmPassword.value
+  );
+});
+
+function registerUser() {
+  registerMessage.value = "";
+
+  if (!registerIsValid.value) {
+    registerMessage.value = "Please complete the form correctly.";
+    return;
+  }
+
+  registerMessage.value = "Registration details are valid.";
+}
 </script>
 
 <template>
   <div>
-    <!-- Navbar -->
+    <!-- Top header -->
     <header class="navbar">
       <div class="logo">
         <span class="logo-icon"
@@ -441,7 +473,16 @@ const activityLessons = computed(() => {
         <span>BeyondBell</span>
       </div>
 
-      <nav class="nav-links">
+      <button
+        class="nav-toggle"
+        @click="menuOpen = !menuOpen"
+        aria-label="Toggle menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" :class="{ 'is-open': menuOpen }">
         <a
           href="#"
           :class="{ active: currentView === 'home' }"
@@ -481,6 +522,13 @@ const activityLessons = computed(() => {
         >
           About
         </a>
+
+        <div class="mobile-menu-actions">
+          <button class="sign-in-button" type="button">Sign In</button>
+          <button class="register-button" @click="changeView('register')">
+            Register
+          </button>
+        </div>
       </nav>
       <div class="nav-actions">
         <button
@@ -497,11 +545,13 @@ const activityLessons = computed(() => {
 
         <button class="sign-in-button">Sign In</button>
 
-        <button class="register-button">Register</button>
+        <button class="register-button" @click="changeView('register')">
+          Register
+        </button>
       </div>
     </header>
 
-    <!-- Hero -->
+    <!-- Main page area -->
     <main>
       <template v-if="!showCart">
         <template v-if="currentView === 'home'">
@@ -731,7 +781,7 @@ const activityLessons = computed(() => {
             </section>
           </div>
         </template>
-        <!-- Classess Page  -->
+        <!-- Classes page -->
         <template v-if="currentView === 'classes'">
           <section class="lessons-section page-lessons-section">
             <div class="lessons-header">
@@ -789,7 +839,7 @@ const activityLessons = computed(() => {
           </section>
         </template>
 
-        <!-- Activities Page  -->
+        <!-- Activity page -->
         <template v-if="currentView === 'activities'">
           <section class="lessons-section page-lessons-section">
             <div class="lessons-header">
@@ -990,7 +1040,7 @@ const activityLessons = computed(() => {
           </div></Transition
         >
       </template>
-      <!-- about page -->
+      <!-- About page -->
       <template v-if="currentView === 'about'">
         <section class="about-section">
           <div class="about-content">
@@ -1016,7 +1066,85 @@ const activityLessons = computed(() => {
           </div>
         </section>
       </template>
-      <!-- Cart View -->
+      <!-- Register page -->
+      <template v-if="currentView === 'register'">
+        <section class="register-section">
+          <div class="register-card">
+            <p class="small-heading">CREATE ACCOUNT</p>
+
+            <h2>Register</h2>
+
+            <p class="register-text">
+              Create your BeyondBell account to book classes and activities.
+            </p>
+
+            <form class="register-form" @submit.prevent="registerUser">
+              <label>
+                Full Name
+
+                <input
+                  v-model.trim="registerName"
+                  type="text"
+                  placeholder="Enter your full name"
+                />
+              </label>
+
+              <label>
+                Email
+
+                <input
+                  v-model.trim="registerEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                />
+              </label>
+
+              <label>
+                Password
+
+                <input
+                  v-model="registerPassword"
+                  type="password"
+                  placeholder="Enter your password"
+                />
+              </label>
+
+              <label>
+                Confirm Password
+
+                <input
+                  v-model="registerConfirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                />
+              </label>
+
+              <p
+                v-if="
+                  registerConfirmPassword &&
+                  registerPassword !== registerConfirmPassword
+                "
+                class="validation-message"
+              >
+                Passwords do not match.
+              </p>
+
+              <p v-if="registerMessage" class="register-message">
+                {{ registerMessage }}
+              </p>
+
+              <button
+                type="submit"
+                class="register-submit-button"
+                :disabled="!registerIsValid"
+              >
+                Register
+              </button>
+            </form>
+          </div>
+        </section>
+      </template>
+      <!-- Cart view -->
       <section v-if="showCart" class="cart-section">
         <div v-if="!orderPlaced">
           <div class="cart-header">
