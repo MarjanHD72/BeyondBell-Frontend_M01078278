@@ -450,7 +450,8 @@ const registerIsValid = computed(() => {
   );
 });
 
-function registerUser() {
+// Register User
+async function registerUser() {
   registerMessage.value = "";
 
   if (!registerIsValid.value) {
@@ -458,10 +459,105 @@ function registerUser() {
     return;
   }
 
-  registerMessage.value = "Registration details are valid.";
+  try {
+    const response = await fetch("http://localhost:3000/register", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        name: registerName.value,
+        email: registerEmail.value,
+        password: registerPassword.value,
+      }),
+    });
+
+    const data = await response.json();
+
+    registerMessage.value = data.message;
+
+    if (response.ok) {
+      registerName.value = "";
+      registerEmail.value = "";
+      registerPassword.value = "";
+      registerConfirmPassword.value = "";
+    }
+  } catch (error) {
+    console.error("Registration failed:", error);
+
+    registerMessage.value = error.message;
+  }
+}
+
+// Login form data
+const loginEmail = ref("");
+const loginPassword = ref("");
+const loginMessage = ref("");
+// Store the logged in user
+const loggedInUser = ref(null);
+
+// Login V alidation_ Check if the login form is complete
+const loginIsValid = computed(() => {
+  return loginEmail.value.trim() !== "" && loginPassword.value !== "";
+});
+// Login user
+async function loginUser() {
+  loginMessage.value = "";
+
+  if (!loginIsValid.value) {
+    loginMessage.value = "Please enter your email and password.";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: loginEmail.value,
+        password: loginPassword.value,
+      }),
+    });
+
+    const data = await response.json();
+
+    loginMessage.value = data.message;
+
+    if (response.ok) {
+      loggedInUser.value = data.user;
+      console.log("Logged in user:", data.user);
+      loginEmail.value = "";
+      loginPassword.value = "";
+      // Go to the home page after successful login
+      currentView.value = "home";
+      // Scroll to the top after login
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  } catch (error) {
+    console.error("Login failed:", error);
+    loginMessage.value = "Login failed.";
+  }
+}
+// Logout user
+function logoutUser() {
+  console.log("Logout clicked");
+
+  loggedInUser.value = null;
+  loginMessage.value = "";
+  currentView.value = "home";
+  showCart.value = false;
+  menuOpen.value = false;
 }
 </script>
 
+<!-- Main Template  -->
 <template>
   <div>
     <!-- Top header -->
@@ -543,11 +639,25 @@ function registerUser() {
           </span>
         </button>
 
-        <button class="sign-in-button">Sign In</button>
+        <div class="auth-buttons">
+          <template v-if="loggedInUser">
+            <span class="user-name"> Hello, {{ loggedInUser.name }} </span>
 
-        <button class="register-button" @click="changeView('register')">
-          Register
-        </button>
+            <button type="button" class="login-button" @click="logoutUser">
+              Logout
+            </button>
+          </template>
+
+          <template v-else>
+            <button class="login-button" @click="changeView('login')">
+              Login
+            </button>
+
+            <button class="register-button" @click="changeView('register')">
+              Register
+            </button>
+          </template>
+        </div>
       </div>
     </header>
 
@@ -1139,6 +1249,50 @@ function registerUser() {
                 :disabled="!registerIsValid"
               >
                 Register
+              </button>
+            </form>
+          </div>
+        </section>
+      </template>
+      <!-- Login page -->
+      <template v-if="currentView === 'login'">
+        <section class="register-section">
+          <div class="register-card">
+            <p class="small-heading">WELCOME BACK</p>
+
+            <h2>Login</h2>
+
+            <p class="register-text">Login to your BeyondBell account.</p>
+
+            <form class="register-form" @submit.prevent="loginUser">
+              <label>
+                Email
+                <input
+                  v-model.trim="loginEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                />
+              </label>
+
+              <label>
+                Password
+                <input
+                  v-model="loginPassword"
+                  type="password"
+                  placeholder="Enter your password"
+                />
+              </label>
+
+              <p v-if="loginMessage" class="register-message">
+                {{ loginMessage }}
+              </p>
+
+              <button
+                type="submit"
+                class="register-submit-button"
+                :disabled="!loginIsValid"
+              >
+                Login
               </button>
             </form>
           </div>

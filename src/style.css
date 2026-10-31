@@ -175,7 +175,7 @@ select {
   font-weight: 800;
 }
 
-.sign-in-button {
+.login-button {
   min-width: 124px;
   height: 56px;
   padding: 0 22px;
@@ -979,7 +979,7 @@ select {
     padding: 0 20px;
   }
 
-  .sign-in-button {
+  .login-button {
     display: none;
   }
 
@@ -1675,7 +1675,7 @@ select {
     height: 46px;
   }
 
-  .sign-in-button,
+  .login-button,
   .register-button {
     min-width: 100px;
     height: 46px;
@@ -1731,7 +1731,7 @@ select {
     font-size: 17px;
   }
 
-  .sign-in-button,
+  .login-button,
   .register-button {
     min-width: 82px;
     height: 40px;
@@ -1816,7 +1816,7 @@ select {
     font-size: 15px;
   }
 
-  .sign-in-button,
+  .login-button,
   .register-button {
     min-width: 72px;
     height: 36px;
@@ -2058,7 +2058,7 @@ select {
     font-size: 17px;
   }
 
-  .nav-actions .sign-in-button,
+  .nav-actions .login-button,
   .nav-actions .register-button {
     display: none;
   }
@@ -2477,7 +2477,7 @@ select {
     font-size: 16px;
   }
 
-  .nav-actions .sign-in-button,
+  .nav-actions .login-button,
   .nav-actions .register-button {
     display: none;
   }
