@@ -1185,26 +1185,75 @@ function logoutUser() {
       <!-- About page -->
       <template v-if="currentView === 'about'">
         <section class="about-section">
-          <div class="about-content">
-            <p class="small-heading">ABOUT BEYONDBELL</p>
+          <div class="about-card">
+            <div class="about-top">
+              <div class="about-content">
+                <p class="small-heading">ABOUT BEYONDBELL</p>
 
-            <h2>Learning Beyond the Classroom</h2>
+                <h2>
+                  Learning Beyond the
+                  <span>Classroom</span>
+                </h2>
 
-            <p>
-              BeyondBell helps parents discover engaging after-school classes
-              and activities for children.
-            </p>
+                <p>
+                  BeyondBell helps families discover engaging after-school
+                  classes and activities for children.
+                </p>
 
-            <p>
-              From coding and science to music, sports and creative arts,
-              children can explore their interests, develop new skills and enjoy
-              learning in a fun and supportive environment.
-            </p>
+                <p>
+                  From coding and science to music, sports and creative arts,
+                  children can explore their interests, build new skills and
+                  grow with confidence.
+                </p>
 
-            <p>
-              Our aim is to make it easier for families to find suitable
-              activities, view available spaces and book lessons in one place.
-            </p>
+                <p>
+                  We make it simple and convenient for families to find, compare
+                  and book the right activities all in one place.
+                </p>
+              </div>
+
+              <div class="about-image">
+                <img
+                  src="/Images/about-kids.png"
+                  alt="Children learning together"
+                />
+              </div>
+            </div>
+
+            <div class="about-features">
+              <div class="about-feature-card">
+                <div class="about-feature-icon">🎯</div>
+
+                <h3>Our Mission</h3>
+
+                <p>
+                  To make enrichment learning more accessible, enjoyable and
+                  rewarding for every child.
+                </p>
+              </div>
+
+              <div class="about-feature-card">
+                <div class="about-feature-icon">📚</div>
+
+                <h3>What We Offer</h3>
+
+                <p>
+                  A wide range of after-school classes and activities including
+                  coding, science, music, sports and creative arts.
+                </p>
+              </div>
+
+              <div class="about-feature-card">
+                <div class="about-feature-icon">🏅</div>
+
+                <h3>Why BeyondBell</h3>
+
+                <p>
+                  A simple, trusted and family-friendly way to discover and book
+                  activities children will enjoy.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </template>
