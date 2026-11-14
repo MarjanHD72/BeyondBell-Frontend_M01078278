@@ -442,6 +442,8 @@ const registerPassword = ref("");
 const registerConfirmPassword = ref("");
 
 const registerMessage = ref("");
+// Controls the registration success modal
+const showRegisterSuccess = ref(false);
 
 // Checks if register form is valid
 const registerIsValid = computed(() => {
@@ -483,6 +485,9 @@ async function registerUser() {
     registerMessage.value = data.message;
 
     if (response.ok) {
+      // Show registration success modal
+      showRegisterSuccess.value = true;
+
       registerName.value = "";
       registerEmail.value = "";
       registerPassword.value = "";
@@ -623,14 +628,39 @@ function logoutUser() {
           About
         </a>
 
+        <!-- Mobile authentication buttons -->
         <div class="mobile-menu-actions">
-          <button class="sign-in-button" type="button">Sign In</button>
-          <button class="register-button" @click="changeView('register')">
-            Register
-          </button>
+          <template v-if="loggedInUser">
+            <span class="mobile-user-name"> Hi, {{ loggedInUser.name }} </span>
+
+            <button type="button" class="login-button" @click="logoutUser">
+              Logout
+            </button>
+          </template>
+
+          <template v-else>
+            <button
+              type="button"
+              class="login-button"
+              @click="changeView('login')"
+            >
+              Login
+            </button>
+
+            <button
+              type="button"
+              class="register-button"
+              @click="changeView('register')"
+            >
+              Register
+            </button>
+          </template>
         </div>
       </nav>
       <div class="nav-actions">
+        <span v-if="loggedInUser" class="user-name" :title="loggedInUser.name">
+          Hi, {{ loggedInUser.name }}
+        </span>
         <button
           class="cart-button"
           :disabled="cart.length === 0"
@@ -645,8 +675,6 @@ function logoutUser() {
 
         <div class="auth-buttons">
           <template v-if="loggedInUser">
-            <span class="user-name"> Hello, {{ loggedInUser.name }} </span>
-
             <button type="button" class="login-button" @click="logoutUser">
               Logout
             </button>
@@ -1257,7 +1285,28 @@ function logoutUser() {
             </form>
           </div>
         </section>
+        <!-- Registration success modal -->
+        <div v-if="showRegisterSuccess" class="success-modal-overlay">
+          <div class="success-modal">
+            <div class="success-icon">✓</div>
+
+            <h2>Registration Successful</h2>
+
+            <p>Your BeyondBell account has been created successfully.</p>
+
+            <button
+              class="register-submit-button"
+              @click="
+                showRegisterSuccess = false;
+                changeView('login');
+              "
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
       </template>
+
       <!-- Login page -->
       <template v-if="currentView === 'login'">
         <section class="register-section">
