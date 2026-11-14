@@ -293,8 +293,12 @@ async function showTeacherLessons(teacher) {
     console.error("Failed to get teacher lessons:", error);
   }
 }
-// Checks if the name and phone number are valid
+// Checks if the user is logged in and checkout details are valid
 const isCheckoutValid = computed(() => {
+  if (!loggedInUser.value) {
+    return false;
+  }
+
   if (customerName.value === "" || customerPhone.value === "") {
     return false;
   }
@@ -1427,7 +1431,9 @@ function logoutUser() {
                 >
                   Enter a phone number using digits only.
                 </p>
-
+                <p v-if="!loggedInUser" class="validation-message">
+                  Please login before checkout.
+                </p>
                 <button
                   class="place-order-button"
                   :disabled="!isCheckoutValid"
