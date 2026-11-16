@@ -2,7 +2,7 @@
 // Import Vue helpers:
 // ref() is used for reactive values that can change.
 // computed() is used for values calculated from other reactive data.
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 
 //                                   Sorting section
 
@@ -230,6 +230,7 @@ const cartTotal = computed(() => {
     return total + lesson.price;
   }, 0);
 });
+
 //Filtering Teachers List
 async function filterByTeacher() {
   try {
@@ -351,6 +352,20 @@ function removeFromCart(lessonId) {
     cart.value.splice(itemIndex, 1);
   }
 }
+// continue shopping on home page(top page scrol)
+async function continueShopping() {
+  showCart.value = false;
+
+  // Wait until the cart view is closed
+  await nextTick();
+
+  // Go back to the top of the page
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
+
 function toggleCart() {
   showCart.value = !showCart.value;
 }
@@ -433,6 +448,12 @@ function changeView(view) {
   currentView.value = view;
   showCart.value = false;
   menuOpen.value = false;
+
+  // Scroll to the top when changing page
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 }
 
 // Register form
@@ -1412,7 +1433,7 @@ function logoutUser() {
               <p>{{ cart.length }} spaces selected</p>
             </div>
 
-            <button class="back-button" @click="showCart = false">
+            <button class="back-button" @click="continueShopping">
               ← Continue Shopping
             </button>
           </div>
@@ -1471,7 +1492,7 @@ function logoutUser() {
 
                 <p>Add a class or activity to get started.</p>
 
-                <button @click="showCart = false">
+                <button @click="continueShopping">
                   Browse Classes & Activities
                 </button>
               </div>
