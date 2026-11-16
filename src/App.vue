@@ -1587,5 +1587,45 @@ function logoutUser() {
 
       <!-- Checkout View -->
     </main>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img src="/Images/bell-logo.png" alt="BeyondBell logo" />
+            <span>BeyondBell</span>
+          </div>
+
+          <p>
+            Helping families discover inspiring after-school classes and
+            activities for children.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Explore</h3>
+          <button class="footer-link" @click="changeView('classes')">
+            Classes
+          </button>
+
+          <button class="footer-link" @click="changeView('activities')">
+            Activities
+          </button>
+
+          <button class="footer-link" @click="changeView('teachers')">
+            Teachers
+          </button>
+        </div>
+
+        <div class="footer-section">
+          <h3>BeyondBell</h3>
+          <p>Learning beyond the classroom.</p>
+          <p>Explore. Learn. Grow.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 BeyondBell. All rights reserved.</p>
+      </div>
+    </footer>
   </div>
 </template>
