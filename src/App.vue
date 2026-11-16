@@ -35,7 +35,10 @@ const nameIsValid = computed(() => {
 const phoneIsValid = computed(() => {
   return /^07[1-57-9][0-9]{8}$/.test(customerPhone.value);
 });
-
+// Opens the browser print dialog for the receipt
+function printReceipt() {
+  window.print();
+}
 //                                Categories Data
 
 // Stores the category information shown on the homepage.
@@ -370,6 +373,10 @@ async function continueShopping() {
 function toggleCart() {
   showCart.value = !showCart.value;
 }
+
+// Stores the completed order for the receipt
+const completedOrder = ref(null);
+
 // Placing Order
 async function placeOrder() {
   if (!isCheckoutValid.value) {
@@ -431,6 +438,23 @@ async function placeOrder() {
       top: 0,
       behavior: "smooth",
     });
+
+    // Save order details for the receipt
+    completedOrder.value = {
+      name: customerName.value,
+      phone: customerPhone.value,
+
+      items: cartItems.value.map((item) => ({
+        subject: item.subject,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+
+      total: cartTotal.value,
+
+      date: new Date().toLocaleDateString("en-GB"),
+    };
+    // empty cart
     cart.value = [];
 
     customerName.value = "";
@@ -1580,6 +1604,53 @@ function logoutUser() {
           <h2>Order Confirmed</h2>
 
           <p>Your order has been submitted successfully.</p>
+
+          <!-- Receipt -->
+          <div v-if="completedOrder" class="receipt">
+            <div class="receipt-header">
+              <h3>Receipt</h3>
+
+              <span>{{ completedOrder.date }}</span>
+            </div>
+
+            <div class="receipt-customer">
+              <p>
+                <strong>Name:</strong>
+                {{ completedOrder.name }}
+              </p>
+
+              <p>
+                <strong>Phone:</strong>
+                {{ completedOrder.phone }}
+              </p>
+            </div>
+
+            <div class="receipt-items">
+              <div
+                v-for="item in completedOrder.items"
+                :key="item.subject"
+                class="receipt-item"
+              >
+                <div>
+                  <strong>{{ item.subject }}</strong>
+
+                  <span> Quantity: {{ item.quantity }} </span>
+                </div>
+
+                <span> £{{ item.price * item.quantity }} </span>
+              </div>
+            </div>
+
+            <div class="receipt-total">
+              <strong>Total</strong>
+
+              <strong>£{{ completedOrder.total }}</strong>
+            </div>
+
+            <button class="receipt-button" type="button" @click="printReceipt">
+              Print / Save Receipt
+            </button>
+          </div>
 
           <button
             class="back-button"

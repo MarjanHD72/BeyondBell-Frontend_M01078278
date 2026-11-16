@@ -205,13 +205,11 @@ select {
   font-size: 18px;
   cursor: pointer;
 }
-/* =================================
-   Cart View
-================================= */
+
 /* Checkout inside cart */
 
 .cart-checkout {
-  margin-top: 25px;
+  margin-top: 5px;
 }
 
 .cart-checkout h3 {
@@ -256,7 +254,7 @@ select {
 }
 .cart-section {
   min-height: 650px;
-  padding: 70px 7%;
+  padding: 1px 7%;
 
   background-color: #f3f6fa;
 }
@@ -657,7 +655,7 @@ select {
 .order-success {
   max-width: 500px;
 
-  margin: 80px auto;
+  margin: 25px auto;
   padding: 45px;
 
   text-align: center;
@@ -717,6 +715,135 @@ select {
 .order-success .back-button:hover {
   background-color: #ffb31a;
   color: #0b1933;
+}
+/* Receipt */
+
+.receipt {
+  width: 100%;
+  max-width: 520px;
+
+  margin: 30px auto;
+  padding: 25px;
+
+  text-align: left;
+
+  background: #ffffff;
+  border: 1px solid #dfe6ee;
+  border-radius: 16px;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.receipt-header h3 {
+  margin: 0;
+
+  color: #0b1933;
+}
+
+.receipt-header span {
+  color: #6f7f92;
+  font-size: 14px;
+}
+
+.receipt-customer {
+  margin-bottom: 20px;
+}
+
+.receipt-customer p {
+  margin: 6px 0;
+}
+
+.receipt-items {
+  border-top: 1px solid #e5eaf0;
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.receipt-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 14px 0;
+}
+
+.receipt-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.receipt-item span {
+  color: #6f7f92;
+}
+
+.receipt-total {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 20px;
+
+  font-size: 20px;
+}
+
+.receipt-button {
+  width: 100%;
+
+  margin-top: 22px;
+  padding: 14px 18px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #0b1933;
+  color: white;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.receipt-button:hover {
+  background: #17345f;
+}
+
+/* print reciept */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt,
+  .receipt * {
+    visibility: visible;
+  }
+
+  .receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+    padding: 30px;
+
+    border: none;
+    box-shadow: none;
+  }
+
+  .receipt-button {
+    display: none;
+  }
 }
 /* Hero */
 
@@ -1626,12 +1753,12 @@ select {
   color: #65758b;
 }
 
-/*    Register Page */
+/* Register Page */
 
 .register-section {
   min-height: 700px;
 
-  padding: 70px 20px;
+  padding: 20px 20px;
 
   display: flex;
   align-items: center;
@@ -1644,7 +1771,7 @@ select {
   width: 100%;
   max-width: 520px;
 
-  padding: 40px;
+  padding: 20px;
 
   background: white;
 
@@ -3219,7 +3346,7 @@ select {
   /* Order success */
 
   .order-success {
-    margin: 40px 15px;
+    margin: 10px 15px;
 
     padding: 30px 20px;
   }
