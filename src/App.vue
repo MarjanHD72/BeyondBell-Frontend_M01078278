@@ -31,8 +31,9 @@ const nameIsValid = computed(() => {
   return /^[A-Za-z ]+$/.test(customerName.value);
 });
 
+// Mobile validation for UK
 const phoneIsValid = computed(() => {
-  return /^[0-9]+$/.test(customerPhone.value);
+  return /^07[1-57-9][0-9]{8}$/.test(customerPhone.value);
 });
 
 //                                Categories Data
@@ -422,7 +423,14 @@ async function placeOrder() {
     }
 
     orderPlaced.value = true;
+    // Wait until the confirmation view is displayed
+    await nextTick();
 
+    // Scroll to the top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     cart.value = [];
 
     customerName.value = "";
@@ -1532,7 +1540,7 @@ function logoutUser() {
                   v-if="customerName && !nameIsValid"
                   class="validation-message"
                 >
-                  Enter a name using letters and spaces only.
+                  Please enter a name using letters and spaces only.
                 </p>
 
                 <label for="customer-phone"> Phone Number </label>
@@ -1548,7 +1556,7 @@ function logoutUser() {
                   v-if="customerPhone && !phoneIsValid"
                   class="validation-message"
                 >
-                  Enter a phone number using digits only.
+                  Please enter a valid UK mobile number starting with 07.
                 </p>
                 <p v-if="!loggedInUser" class="validation-message">
                   Please login before checkout.
