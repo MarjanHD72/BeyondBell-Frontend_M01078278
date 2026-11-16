@@ -1631,7 +1631,7 @@ select {
 .register-section {
   min-height: 700px;
 
-  padding: 70px 20px;
+  padding: 20px 20px;
 
   display: flex;
   align-items: center;
@@ -1639,12 +1639,16 @@ select {
 
   background-color: #f3f6fa;
 }
-
+/* Login page */
+.register-section.login-section {
+  align-items: flex-start;
+  padding-top: 55px;
+}
 .register-card {
   width: 100%;
   max-width: 520px;
 
-  padding: 40px;
+  padding: 20px;
 
   background: white;
 

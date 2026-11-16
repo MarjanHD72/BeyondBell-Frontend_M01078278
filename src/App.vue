@@ -1288,7 +1288,7 @@ function logoutUser() {
       </template>
       <!-- Register page -->
       <template v-if="currentView === 'register'">
-        <section class="register-section">
+        <section class="register-section login-section">
           <div class="register-card">
             <p class="small-heading">CREATE ACCOUNT</p>
 
@@ -1387,7 +1387,7 @@ function logoutUser() {
 
       <!-- Login page -->
       <template v-if="currentView === 'login'">
-        <section class="register-section">
+        <section class="register-section login-section">
           <div class="register-card">
             <p class="small-heading">WELCOME BACK</p>
 
