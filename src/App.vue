@@ -7,6 +7,7 @@ import { ref, computed, onMounted, nextTick } from "vue";
 // API URL
 const API_URL = "https://m01078278-beyondbell-backend.onrender.com";
 
+const baseUrl = import.meta.env.BASE_URL;
 //                                   Sorting section
 
 // Stores the field currently used for sorting.
@@ -627,7 +628,7 @@ function logoutUser() {
     <header class="navbar">
       <div class="logo">
         <span class="logo-icon"
-          ><img src="../public/Images/bell-logo.png" alt="Logo"
+          ><img :src="baseUrl + 'Images/bell-logo.png'" alt="Logo"
         /></span>
         <span>BeyondBell</span>
       </div>
@@ -812,8 +813,8 @@ function logoutUser() {
               <div class="shape shape-two"></div>
 
               <img
+                :src="baseUrl + 'Images/hero-kids.png'"
                 class="hero-kids-image"
-                src="/Images/hero-kids.png"
                 alt="Happy children holding school books"
               />
             </div>
@@ -1268,7 +1269,7 @@ function logoutUser() {
 
               <div class="about-image">
                 <img
-                  src="/Images/about-kids.png"
+                  :src="baseUrl + 'Images/about-kids.png'"
                   alt="Children learning together"
                 />
               </div>
@@ -1675,7 +1676,7 @@ function logoutUser() {
       <div class="footer-content">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="/Images/bell-logo.png" alt="BeyondBell logo" />
+            <img :src="baseUrl + 'Images/bell-logo.png'" alt="Logo" />
             <span>BeyondBell</span>
           </div>
 
