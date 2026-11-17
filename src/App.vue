@@ -4,6 +4,9 @@
 // computed() is used for values calculated from other reactive data.
 import { ref, computed, onMounted, nextTick } from "vue";
 
+// API URL
+const API_URL = "https://m01078278-beyondbell-backend.onrender.com";
+
 //                                   Sorting section
 
 // Stores the field currently used for sorting.
@@ -91,7 +94,7 @@ const searchText = ref("");
 async function searchLessons() {
   try {
     if (searchText.value.trim() === "") {
-      const response = await fetch("http://localhost:3000/lessons");
+      const response = await fetch(`${API_URL}/lessons`);
       const data = await response.json();
 
       lessons.value = data.map((lesson) => ({
@@ -105,7 +108,7 @@ async function searchLessons() {
     }
 
     const response = await fetch(
-      `http://localhost:3000/lessons/search?q=${encodeURIComponent(searchText.value)}`,
+      `${API_URL}/lessons/search?q=${encodeURIComponent(searchText.value)}`,
     );
 
     const data = await response.json();
@@ -127,7 +130,7 @@ async function searchLessons() {
 const lessons = ref([]);
 // Get lessons from backend
 onMounted(() => {
-  fetch("http://localhost:3000/lessons")
+  fetch(`${API_URL}/lessons`)
     .then((response) => response.json())
     .then((data) => {
       lessons.value = data.map((lesson) => ({
@@ -140,7 +143,7 @@ onMounted(() => {
     .catch((error) => {
       console.error("Failed to fetch lessons:", error);
     });
-  fetch("http://localhost:3000/teachers")
+  fetch(`${API_URL}/teachers`)
     .then((response) => response.json())
     .then((data) => {
       teachers.value = data;
@@ -239,7 +242,7 @@ const cartTotal = computed(() => {
 async function filterByTeacher() {
   try {
     if (selectedTeacher.value === "") {
-      const response = await fetch("http://localhost:3000/lessons");
+      const response = await fetch(`${API_URL}/lessons`);
       const data = await response.json();
       lessons.value = data.map((lesson) => ({
         ...lesson,
@@ -252,7 +255,7 @@ async function filterByTeacher() {
     }
 
     const response = await fetch(
-      `http://localhost:3000/teachers/${selectedTeacher.value}/lessons`,
+      `${API_URL}/teachers/${selectedTeacher.value}/lessons`,
     );
 
     const data = await response.json();
@@ -276,9 +279,7 @@ async function showTeacherLessons(teacher) {
   selectedTeacherName.value = teacher.firstName + " " + teacher.lastName;
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/teachers/${teacher._id}/lessons`,
-    );
+    const response = await fetch(`${API_URL}/teachers/${teacher._id}/lessons`);
 
     const data = await response.json();
 
@@ -399,7 +400,7 @@ async function placeOrder() {
 
   try {
     // Create the order
-    const response = await fetch("http://localhost:3000/orders", {
+    const response = await fetch(`${API_URL}/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -418,7 +419,7 @@ async function placeOrder() {
 
     // Update remaining spaces in MongoDB
     for (const lesson of lessonsToUpdate) {
-      await fetch(`http://localhost:3000/lessons/${lesson.id}`, {
+      await fetch(`${API_URL}/lessons/${lesson.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -519,7 +520,7 @@ async function registerUser() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/register", {
+    const response = await fetch(`${API_URL}/register`, {
       method: "POST",
 
       headers: {
@@ -574,7 +575,7 @@ async function loginUser() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/login", {
+    const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1330,6 +1331,7 @@ function logoutUser() {
                   v-model.trim="registerName"
                   type="text"
                   placeholder="Enter your full name"
+                  autocomplete="name"
                 />
               </label>
 
@@ -1340,6 +1342,7 @@ function logoutUser() {
                   v-model.trim="registerEmail"
                   type="email"
                   placeholder="Enter your email"
+                  autocomplete="email"
                 />
               </label>
 
@@ -1350,6 +1353,7 @@ function logoutUser() {
                   v-model="registerPassword"
                   type="password"
                   placeholder="Enter your password"
+                  autocomplete="new-password"
                 />
               </label>
 
@@ -1360,6 +1364,7 @@ function logoutUser() {
                   v-model="registerConfirmPassword"
                   type="password"
                   placeholder="Confirm your password"
+                  autocomplete="new-password"
                 />
               </label>
 
@@ -1411,7 +1416,7 @@ function logoutUser() {
 
       <!-- Login page -->
       <template v-if="currentView === 'login'">
-        <section class="register-section login-section">
+        <section class="register-section">
           <div class="register-card">
             <p class="small-heading">WELCOME BACK</p>
 
